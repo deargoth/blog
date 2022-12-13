@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load vinfilters %}
+
+{% block content %}
+{% include 'parciais/_messages.html' %}
+        <!-- CONTENT -->
+        <div class="card-columns mt-4">
+            
+            {% for post in posts %}
+                
+            <div class="card">
+
+                {% if post.imagem %}
+                <a href="{% url 'post_detalhes' post.id %}">
+                    <img class="card-img-top"
+                        src="{{ post.imagem.url }}"
+                        alt="{{ post.title }}">
+                </a>
+                {% endif %}
+
+
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{% url 'post_detalhes' post.id %}">
+                            {{ post.title }}
+                        </a>
+                    </h5>
+                    <p class="card-text">{{ post.excerto }}</p>
+                    <p class="card-text">
+                        <small class="text-muted">{{ post.data|naturalday|title }}
+                             | {{ post.num_comment|plural_comment }} | 
+                             {{ post.category }}
+                        </small>
+                    </p>
+
+                    <div class="text-right">
+                        <a href="{% url 'post_detalhes' post.id %}" class="btn btn-outline-primary">Ler mais...</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <!--/CONTENT-->
+    {% include 'parciais/_pagination.html' %}
+{% endblock content %}

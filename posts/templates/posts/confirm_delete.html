@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="text-center mt-3 mb-3">
+            <form method="POST">
+                {% csrf_token %}
+                <h1 class="mb-3">Tem certeza que deseja apagar este post?</h1>
+                <input type="submit" value="Sim, tenho certeza" class="btn btn-outline-danger mr-3">
+                <input type="reset" value="Não quero apagar mais" class="btn btn-outline-success ml-3" onclick="location.href='{% url 'post_detalhes' post.id %}'">
+            </form>
+        </div>
+    </div>
+{% endblock content %}
+    

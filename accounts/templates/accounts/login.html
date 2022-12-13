@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+{% if not user.is_authenticated %}    
+
+<div class="container mt-3 mb-3">
+  <div class="mb-3">
+    <h1 class="mb-0">Login</h1>
+    <a href="{% url 'register' %}">Registrar-se</a>
+    <hr>
+  </div>
+  <form method="POST" action="{% url 'index_login' %}">
+      {% include 'parciais/_messages.html' %}
+      {% csrf_token %}
+      
+      
+      {{ form.non_field_errors }}
+      {% for visible_field in form.visible_fields %}
+      <div class="form-group">
+        {{ visible_field.label_tag }} <br>
+        {{ visible_field}}
+        {{ visible_field.help_text }}
+        <hr>
+      </div>
+      {% endfor %}
+      
+      
+      <input type="submit" value="Entrar" class="btn btn-primary">
+</div> 
+
+{% else %}
+  {% include 'accounts/logado.html' %}
+{% endif %}
+
+{% endblock content %}
+    

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="mt-3 mb-3">
+    <form method="POST" enctype="multipart/form-data">
+        <h1>Editando o post</h1>
+        {% include 'parciais/_messages.html' %}
+        {% csrf_token %}
+        
+        {% for visible_field in form.visible_fields  %}
+            <div class="form-group">
+                {{ visible_field.label_tag }} <br>
+                {{ visible_field|safe }}
+            </div>
+        {% endfor %}
+            
+        <input type="submit" value="Salvar" class="btn btn-primary">
+        <input type="reset" value="Cancelar" class="btn btn-danger" onclick="location.href='{% url 'post_detalhes' post.id %}'">
+    </form>
+</div>
+{% endblock content %}
+    

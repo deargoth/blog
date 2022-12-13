@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+{% if not user.is_authenticated %}
+  <div class="mt-3 mb-3">
+    <div class="mb-3">
+      <h1 class="mb-0">Registrar-se</h1>
+      <a href="{% url 'index_login' %}">Login</a>
+    </div> 
+    <form method="POST" action="{% url 'register' %}">
+        {% include 'parciais/_messages.html' %}
+        {% csrf_token %} 
+
+        {% for visible_field in form.visible_fields %}
+          <div class="form-group">
+            {{ visible_field.label_tag }} <br>
+            {{ visible_field }} <br>
+            <p class="help_text">{{ visible_field.help_text }}</p>
+            {{ visible_field.errors }}  
+            <hr>
+          </div>
+        {% endfor %}
+        <input type="submit" value="Registrar" class="btn btn-primary">
+      </form>
+  </div>
+    
+    {% else %}
+    <div class="mt-3 mb-3 text-center">
+        <h1>Você já está logado.</h1>
+        <p><a href="{% url 'index' %}"><b> Clique aqui</b></a> para ser redirecionado.</p>
+    </div>
+
+{% endif %}
+
+{% endblock content %}

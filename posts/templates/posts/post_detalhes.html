@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %} {{ post.title }} | {% endblock %}
+
+{% block content %}
+<div class="row pt-5">
+    <div class="col-xl"></div>
+    <div class="col-xl-8 text-center">
+        <h2>{{ post.title }}</h2>
+        <h5>{{ post.excerto }}</h5>
+        <p class="text-muted mt-4">
+            <small>
+                {{ post.author }} | {{ post.data }} | {{ post.category }}
+            </small>
+        </p>
+    </div>
+    <div class="col-xl"></div>
+</div>
+
+<div class="row pt-5">
+    <div class="col-xl"></div>
+    <div class="col-xl-8">
+        
+        
+        {% if post.imagem %}
+        <img class="img-fluid pb-5 " src="{{ post.imagem.url }}" alt="">
+        {% endif %}
+
+
+        <p>{{ post.content|safe }}</p>
+    </div>
+    <div class="col-xl"></div>
+</div>
+
+
+<div class="row pt-5">
+    <div class="col-xl"></div>
+    <div class="col-xl-8">
+
+        
+        {% if comments.count >= 1 %}
+            <h2 class="my-3">Comentários ({{ comments.count }})</h2>
+
+            {% for comment in comments %}
+            <h5 class="mb-2 mt-5">{{ comment.name }} disse:</h5>
+            <small class="text-muted">{{ comment.date_comment|naturalday|title }}</small>
+            <p class="mb-1">{{ comment.comment }}</p>
+            {% endfor %}
+            
+        {% else %}
+        <h2 class="my-3">Não há nenhum comentário a ser exibido :( </br> Comente aqui!</h2>
+        
+        
+        {% endif %}
+
+
+
+    </div>
+    <div class="col-xl"></div>
+</div>
+
+
+<div class="row pt-5">
+    <div class="col-xl"></div>
+    <div class="col-xl-8">
+        <h2 class="my-3">Deixe um comentário</h2>
+
+        <form method="POST" action="#envia_comentario">
+            {% csrf_token %}
+
+            {% for hidden_field in form.hidden_fields %}
+                {{ hidden_field }}
+            {% endfor %}
+
+            
+            {% for visible_field in form.visible_fields %}
+                <div class="form-group">
+                    {{ visible_field.label_tag }} <br>
+                    {{ visible_field }}
+                    {{ visible_field.errors  }}
+                </div>
+            {% endfor %}
+                
+                
+
+            <div class="mb-3">
+                {% include 'parciais/_messages.html' %}
+                <input id="envia_comentario" type="submit" class="btn btn-primary"
+                value="Enviar">
+
+                {% if user.is_staff or user == post.author %}
+                    <button type="button" class="btn btn-primary">
+                        <a style="color: #fff; text-decoration: none;" href="{% url 'edit_post' post.id %}">Editar post</a>
+                    </button>
+                {% endif %}
+
+                {% if user.is_staff or user == post.author %}
+                    <button type="button" class="btn btn-danger">
+                        <a style="color: #fff; text-decoration: none;" href="{% url 'delete' post.id %}">Deletar post</a>
+                    </button>
+                {% endif %} 
+            </div>
+        </form>    
+    </div>
+    <div class="col-xl"></div>
+</div>
+<!-- POST -->
+
+{% endblock content %}

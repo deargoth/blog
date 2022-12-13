@@ -1,0 +1,37 @@
+{% load static %}
+<style>
+body{ 
+    min-height: 100vh; 
+    margin: 0; 
+    
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+  
+  header{ 
+    min-height:50px;
+    background:lightcyan; 
+  }
+  
+</style>
+
+  <body>
+    <footer class="bg-primary text-light">
+        <div class="container pt-4 mt-1">
+            <div class="row">
+                <div class="col">
+                    <p class="text-left">Powered by Django</p>
+                </div>
+                <div class="col">
+                    <p class="text-right">Made By Luiz Otávio</p>
+                </div>
+            </div>
+        </div>    
+    </footer>
+  </body>
+
+
+
+
+<script src="{% static 'vendor/jquery/jquery.slim.min.js'%}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
