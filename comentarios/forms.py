@@ -25,9 +25,6 @@ class FormComentario(ModelForm):
     class Meta:
         model = Comentario
         
-        if not User.is_authenticated:
-            fields = ('name', 'email', 'comment')
+        fields = ('name', 'email', 'comment')
 
-        else:
-            fields = ('comment', )
             
