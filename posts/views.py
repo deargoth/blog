@@ -5,13 +5,12 @@ from django.views.generic.base import RedirectView
 from django.views.generic import View
 from posts.models import Post
 from django.db.models import Q, Case, When, Count
-from comentarios.forms import FormComentario 
+from comentarios.forms import PublicForm, AuthForm
 from comentarios.models import Comentario
 from django.contrib import messages
 from posts.forms import FormEditing
 from django.urls import reverse_lazy
 from django.http import Http404
-
 
 
 class Index(ListView):
@@ -37,11 +36,10 @@ class Index(ListView):
 class Busca(Index):
     template_name = 'posts/busca.html'
 
-    
     def get_queryset(self):
         qs = super().get_queryset()
         termo = self.request.GET.get('termo')
-        
+
         if not termo:
             return qs
 
@@ -53,27 +51,28 @@ class Busca(Index):
             Q(category__name_cat__iexact=termo)
 
         )
-        
+
         return qs
 
 
 class Post_Categoria(Index):
     template_name = 'posts/categoria.html'
-    
+
     def get_queryset(self):
         qs = super().get_queryset()
         categoria = self.kwargs.get('categoria', None)
 
         if not categoria:
             return qs
-        
+
         qs = qs.filter(category__name_cat__iexact=categoria)
 
         return qs
 
+
 class Post_Detalhes(View):
     template_name = 'posts/post_detalhes.html'
-    
+
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
 
@@ -82,31 +81,48 @@ class Post_Detalhes(View):
         self.context = {
             'post': post,
             'comments': Comentario.objects.filter(post_comment=post, published_comment=True),
-            'form': FormComentario(request.POST or None),
+            'publicform': PublicForm(request.POST or None),
+            'authform': AuthForm(request.POST or None),
         }
-    
+
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name, self.context)
-    
+
     def post(self, request, *args, **kwargs):
-        
-        form = self.context['form']
-        
-        if not form.is_valid():
-            return render(request, self.template_name, self.context)
-            
-        comment = form.save(commit=False)
+
+        publicform = self.context['publicform']
+        authform = self.context['authform']
 
         if request.user.is_authenticated:
+            authform = self.context['authform']
+
+            if not authform.is_valid():
+                return render(request, self.template_name, self.context)
+
+            comment = authform.save(commit=False)
+            
             comment.user_comment = request.user
             comment.email = request.user.email
             comment.name = request.user.first_name
+            comment.post_comment = self.context['post']
+            comment.save()
 
-        comment.post_comment = self.context['post']
 
-        comment.save()
-        messages.success(self.request, 'Comentário enviado para análise com sucesso.')
+        else:
+            publicform = self.context['publicform']
+            
+            if not publicform.is_valid():
+                return render(request, self.template_name, self.context)
+
+            comment = publicform.save(commit=False)
+            
+            comment.post_comment = self.context['post']
+            comment.save()
+            
+        messages.success(
+            self.request, 'Comentário enviado para análise com sucesso.')
         return redirect('post_detalhes', pk=self.pk)
+
 
 class EditPost(UpdateView):
     model = Post
@@ -119,6 +135,7 @@ class DeletePost(DeleteView):
     model = Post
     success_url = '/'
     template_name = 'posts/confirm_delete.html'
-    
+
+
 class Handler404(RedirectView):
     url = '/'

@@ -2,7 +2,8 @@ from django.forms import ModelForm
 from .models import Comentario
 from django.contrib.auth.models import User, AnonymousUser
 
-class FormComentario(ModelForm):
+
+class PublicForm(ModelForm):
     def clean(self):
         data = self.cleaned_data
 
@@ -12,7 +13,7 @@ class FormComentario(ModelForm):
 
         if len(name) < 3:
             self.add_error(
-                'name', 
+                'name',
                 'Seu nome precisa de mais de 3 carácteres.'
             )
 
@@ -24,7 +25,21 @@ class FormComentario(ModelForm):
 
     class Meta:
         model = Comentario
-        
         fields = ('name', 'email', 'comment')
 
-            
+
+class AuthForm(ModelForm):
+    def clean(self):
+        data = self.cleaned_data
+
+        comment = data.get('comment')
+
+        if len(comment) < 5:
+            self.add_error(
+                'comment',
+                'O seu comentário precisa possuir mais de 5 carácteres.'
+            )
+
+    class Meta:
+        model = Comentario
+        fields = ('comment',)

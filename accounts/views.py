@@ -70,7 +70,8 @@ class CreatePost(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         post_form.author = self.request.user
         
         post_form.save()
+        messages.success(
+            self.request, 'Post enviado para análise com sucesso.')
         return redirect('index')
     
-    success_message = 'Post enviado para análise com sucesso.'
 
