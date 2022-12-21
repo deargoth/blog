@@ -14,7 +14,7 @@ class PublicForm(ModelForm):
         if len(name) < 3:
             self.add_error(
                 'name',
-                'Seu nome precisa de mais de 3 carácteres.'
+                'Seu nome precisa de mais de 3 caracteres.'
             )
 
         if len(comment) < 5:

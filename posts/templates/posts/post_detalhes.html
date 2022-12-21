@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load humanize %}
+{% load crispy_forms_tags %}
 
 {% block title %} {{ post.title }} | {% endblock %}
 
@@ -77,17 +78,13 @@
             {% if request.user.is_authenticated %}                
                 {% for visible_field in authform.visible_fields %}
                     <div class="form-group">
-                        {{ visible_field.label_tag }} <br>
-                        {{ visible_field }}
-                        {{ visible_field.errors  }}
+                        {{ visible_field|as_crispy_field }}
                     </div>
                 {% endfor %}
             {% else %}
                 {% for visible_field in publicform.visible_fields %}
                 <div class="form-group">
-                    {{ visible_field.label_tag }} <br>
-                    {{ visible_field }}
-                    {{ visible_field.errors  }}
+                    {{ visible_field|as_crispy_field }}
                 </div>
             {% endfor %}
             {% endif %}
