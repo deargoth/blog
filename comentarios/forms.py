@@ -1,15 +1,16 @@
 from django.forms import ModelForm
 from .models import Comentario
-from django.contrib.auth.models import User, AnonymousUser
+import requests
 
 
 class PublicForm(ModelForm):
     def clean(self):
-        data = self.cleaned_data
+        raw_data = self.data
 
-        name = data.get('name')
-        email = data.get('email')
-        comment = data.get('comment')
+        cleaned_data = self.cleaned_data
+        name = cleaned_data.get('name')
+        email = cleaned_data.get('email')
+        comment = cleaned_data.get('comment')
 
         if len(name) < 3:
             self.add_error(
@@ -20,7 +21,7 @@ class PublicForm(ModelForm):
         if len(comment) < 5:
             self.add_error(
                 'comment',
-                'O seu comentário precisa possuir mais de 5 carácteres.'
+                'O seu comentário precisa possuir mais de 5 caracteres.'
             )
 
     class Meta:
@@ -30,9 +31,31 @@ class PublicForm(ModelForm):
 
 class AuthForm(ModelForm):
     def clean(self):
-        data = self.cleaned_data
+        raw_data = self.data
+        recaptcha_response = raw_data.get('g-recaptcha-response')
+        
+        # https://www.google.com/recaptcha/api/siteverify
+        # secret
+        # response
 
-        comment = data.get('comment')
+        recaptcha_request = requests.post(
+            'https://www.google.com/recaptcha/api/siteverify',
+            data = {
+                'secret': '6LeFS5cjAAAAAKCQOIoVfJjm8kLOtg5CK6LV-PMt',
+                'response': recaptcha_response
+            }
+        )
+        recaptcha_result = recaptcha_request.json()
+
+        if not recaptcha_result.get('success'):
+            self.add_error(
+                'comment',
+                'Desculpe! Ocorreu um erro, tente novamente.'
+            )
+            return
+        
+        cleaned_data = self.cleaned_data
+        comment = cleaned_data.get('comment')
 
         if len(comment) < 5:
             self.add_error(
